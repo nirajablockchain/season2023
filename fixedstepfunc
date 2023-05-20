@@ -8,6 +8,10 @@ def reward_function(params):
     # Get current progress and previous progress
     progress = params['progress']
     global prev_progress
+    is_offtrack = params['is_offtrack']
+    
+    if is_offtrack:
+        reward = 1e-7
 
     # Calculate progress per step
     progress_per_step = (progress - prev_progress) / params['steps']
