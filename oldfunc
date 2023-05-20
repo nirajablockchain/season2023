@@ -1,0 +1,24 @@
+prev_progress = 0
+def reward_function(params):
+
+
+    global prev_progress
+
+    # Read all input parameters
+    progress = max(0, params['progress'])
+    steps = params['steps']
+    speed = params['speed']
+    steering_angle = params['steering_angle']
+    is_offtrack = params['is_offtrack']
+
+    # Reward - make progress as fast as possible
+    prog_per_step = max(0, ((progress / steps) ** 3) * 5)
+    prog_diff = max(0, progress - prev_progress)
+    reward = prog_per_step + prog_diff
+
+    ## Zero reward if off track ##
+    if is_offtrack:
+        reward = 1e-7
+
+    prev_progress = progress
+    return reward
