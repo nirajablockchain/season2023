@@ -1,0 +1,25 @@
+prev_progress =0
+
+def reward_function(params):
+    # Constants for scaling the rewards
+    PROGRESS_WEIGHT = 0.7
+    STEP_WEIGHT = 0.3
+
+    # Get current progress and previous progress
+    progress = params['progress']
+    global prev_progress
+
+    # Calculate progress per step
+    progress_per_step = (progress - prev_progress) / params['steps']
+
+    # Calculate the reward based on progress per step
+    progress_reward = PROGRESS_WEIGHT * progress_per_step
+
+    # Calculate the reward for minimizing the number of steps
+    step_reward = STEP_WEIGHT / params['steps']
+
+    # Combine the rewards
+    total_reward = progress_reward + step_reward
+
+    prev_progress = progress
+    return float(total_reward)
