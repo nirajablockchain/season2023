@@ -1,6 +1,6 @@
 prev_progress = 0
 
-def progress_reward_function(params):
+def reward_function(params):
     # Constants for scaling the rewards
     DISTANCE_WEIGHT = 0.8
     PROGRESS_WEIGHT = 0.2
