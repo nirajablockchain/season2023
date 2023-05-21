@@ -1,0 +1,41 @@
+import math
+
+prev_progress = 0
+def reward_function(params):
+    global prev_progress
+
+    # Read all input parameters
+    progress = max(0, params['progress'])
+    steps = params['steps']
+    speed = params['speed']
+    steering_angle = params['steering_angle']
+    is_offtrack = params['is_offtrack']
+    track_width = params['track_width']
+    waypoints = params['waypoints']
+    closest_waypoints = params['closest_waypoints']
+
+    # Reward - make progress as fast as possible
+    prog_per_step = max(0, ((progress / steps) ** 3) * 5)
+    prog_diff = max(0, progress - prev_progress)
+
+    # Calculate curvature
+    next_index = closest_waypoints[1]
+    prev_index = closest_waypoints[0]
+    next_waypoint = waypoints[next_index]
+    prev_waypoint = waypoints[prev_index]
+    track_direction = math.atan2(next_waypoint[1] - prev_waypoint[1], next_waypoint[0] - prev_waypoint[0])
+    track_direction = math.degrees(track_direction)
+    track_direction = (track_direction + 360) % 360
+    track_curvature = abs(track_direction - params['heading'])
+
+    # Adjust reward based on curvature
+    curvature_reward = 1 / (track_curvature + 1)
+
+    reward = prog_per_step + prog_diff + curvature_reward
+
+    ## Zero reward if off track ##
+    if is_offtrack:
+        reward = 1e-7
+
+    prev_progress = progress
+    return reward
