@@ -1,0 +1,55 @@
+import time
+
+prev_progress = 0
+lap_start_time = None
+
+
+
+def reward_function(params):
+    global prev_progress, lap_start_time
+
+    # Read all input parameters
+    progress = max(0, params['progress'])
+    steps = max(1,params['steps'])
+    is_offtrack = params['is_offtrack']
+
+    # Check if lap has started
+    if progress <= 0.2373 or steps==1 or lap_start_time is None :
+        lap_start_time = time.time()
+        print("Lap start time has restarted for beginning")
+
+
+
+    # Calculate lap time if lap has started and progress is 100
+
+    time_reward=0
+
+    if progress > 1:
+        lap_time = time.time() - lap_start_time
+        target = 0.47 * progress
+        time_reward = max(0, (target - lap_time))
+        print ( " Target " + str(target) +  " Actual " + str(lap_time))
+
+    if progress == 100 :
+        print("Restart lap_start_time")
+        lap_start_time = None
+
+
+
+    # Reward - make progress as fast as possible and penalize longer lap times
+    prog_per_step = max(0, ((progress / steps) ** 3) * 5)
+    prog_diff = max(0, progress - prev_progress)
+
+
+    reward = prog_per_step + prog_diff + time_reward
+
+
+
+    # Zero reward if off track
+    if is_offtrack:
+        reward = 1e-7
+        lap_start_time = None
+
+    prev_progress = progress
+
+    return reward
